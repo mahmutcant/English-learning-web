@@ -16,7 +16,7 @@ const Topbar = () => {
             </div>
 
             <div className='flex'>
-                <Link className='m-3 text-[#5D5A88] border flex items-center p-1 rounded-[10px]' href="/login">
+                <Link className='m-3 text-[#5D5A88] border items-center p-1 rounded-[10px] flex md:hidden' href="/login">
                     <span className='px-2'>Login</span>
                 </Link>
                 <button className="inline-flex items-center p-2 text-sm font-medium text-center md:hidden" onClick={() => setIsDropdownOpen(!isDropdownOpen)} type="button">
@@ -45,7 +45,7 @@ const Topbar = () => {
                 </button>
             </div>
 
-            <div className='text-black m-4 flex justify-between hidden md:flex'>
+            <div className='text-black m-4 justify-between hidden md:flex'>
                 <Link href="/about" className={`mr-3 text-[#5D5A88] p-2 h-full ${currentPath === "/about" ? "border-b-4 border-indigo-500" : "border-0"}`}>
                     <span>About</span>
                 </Link>
