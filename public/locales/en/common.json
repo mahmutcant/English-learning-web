@@ -1,0 +1,8 @@
+{
+    "dropdownButtons": {
+        "logout": "Logout",
+        "settings": "Settings",
+        "educationContext": "Education Context",
+        "exam":"Exam"
+    }
+}
