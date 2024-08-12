@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import NextAuth from "next-auth/next";
 import CredentialProvider from "next-auth/providers/credentials";
 export const authOptions = {
+  secret: process.env.NEXT_AUTH_SECRET,
   pages: {
     signIn: "/login",
   },
