@@ -1,13 +1,21 @@
 "use client";
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Logo, DropdownIcon } from "../../../public/logo";
 import ProtectedTopbar from './ProtectedTopbar';
+import { getDictionary } from '../[lang]/dictionaries';
 const Topbar = () => {
     const currentPath = usePathname();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [dict, setDict] = useState<any>();
     const notProtectedRoutes = ["/login", "/register", "/about", "/resources", "/about"]
+    useEffect(() => {
+        const fetchDict = async() => {
+            setDict(await getDictionary(currentPath?.split("/")[1]))
+        }
+        fetchDict()
+    }, [currentPath])
     return (
         <>
         {notProtectedRoutes.includes(currentPath!) ? (<div className='bg-white flex justify-between p-3'>
@@ -64,7 +72,7 @@ const Topbar = () => {
                     <span className='px-4 font-semibold text-white'>Get Started</span>
                 </Link>
             </div>
-        </div>) : <ProtectedTopbar currentPath={currentPath!} isDropdownOpen={isDropdownOpen} setIsDropdownOpen={setIsDropdownOpen}/>}
+        </div>) : <ProtectedTopbar dict={dict} currentPath={currentPath!} isDropdownOpen={isDropdownOpen}  setIsDropdownOpen={setIsDropdownOpen}/>}
         </>
     )
 }
