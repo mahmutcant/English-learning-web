@@ -7,17 +7,17 @@ import { getDatabase } from "firebase/database"
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBqEQF0heatiYwvZcoobhMnk6iJ3UXEBRw",
-  authDomain: "reminder-english-learn.firebaseapp.com",
-  databaseURL: "https://reminder-english-learn-default-rtdb.firebaseio.com",
-  projectId: "reminder-english-learn",
-  storageBucket: "reminder-english-learn.appspot.com",
-  messagingSenderId: "934145013483",
-  appId: "1:934145013483:web:d05f6095e2a94531b8f0ae"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID
 };
 
 // Initialize Firebase
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getDatabase(app);
 export {app, auth,db}

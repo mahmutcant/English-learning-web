@@ -1,0 +1,9 @@
+{
+    "mainpage": "Anasayfa",
+    "dropdownButtons": {
+        "logout": "Çıkış Yap",
+        "settings": "Ayarlar",
+        "educationContext": "Eğitim İçeriği",
+        "exam":"Sınav"
+    }
+}

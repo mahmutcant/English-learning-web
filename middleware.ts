@@ -1,17 +1,39 @@
-import { NextRequest } from "next/server"
+import { auth, db } from '@/firebase';
+import { ref } from 'firebase/database';
+import { NextResponse, type NextRequest } from 'next/server';
 
+const locales = ['en', 'tr'];
+function getLocale(request:any) {
+  return "en"
+}
 export function middleware(request: NextRequest) {
-    const currentUser = request.cookies.get('next-auth.session-token')?.value
-   
-    if (currentUser && !request.nextUrl.pathname.startsWith('/')) {
-      return Response.redirect(new URL('/mainpage', request.url))
+  const currentUser = request.cookies.get('next-auth.session-token')?.value;
+  const { pathname, origin } = request.nextUrl;
+
+  if (currentUser) {
+    if (!pathname.startsWith('/mainpage') && !locales.some(locale => pathname.startsWith(`/${locale}/mainpage`))) {
+      return NextResponse.redirect(`${origin}/mainpage`);
     }
-   
-    if (!currentUser && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/register')) {
-      return Response.redirect(new URL('/login', request.url));
+  } else {
+
+    if (
+      !pathname.startsWith('/login') &&
+      !pathname.startsWith('/register') &&
+      !locales.some(locale => pathname.startsWith(`/${locale}/login`))
+    ) {
+      return NextResponse.redirect(`${origin}/login`);
     }
   }
-   
-  export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+
+  const pathnameHasLocale = locales.some(locale => pathname.startsWith(`/${locale}`));
+  if (!pathnameHasLocale) {
+    const locale = getLocale(request);
+    request.nextUrl.pathname = `/${locale}${pathname}`;
+    return NextResponse.redirect(request.nextUrl);
   }
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+};

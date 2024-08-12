@@ -1,10 +1,11 @@
 'use client';
 import React, { useState } from 'react'
-import { EyeIcon } from '../../../public/logo'
+import { EyeIcon } from '../../../../public/logo'
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/firebase';
 type loginObject = {
     email: string,
     password: string
@@ -13,6 +14,7 @@ const Page = () => {
     const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false)
     const { register, handleSubmit } = useForm<loginObject>({ shouldUseNativeValidation: true });
     const onSubmit: SubmitHandler<loginObject> = async (data) => {
+        signInWithEmailAndPassword(auth, data.email, data.password)
         signIn("credentials", {email:data.email,password:data.password, redirect: true, callbackUrl: "/mainpage"})
     }
     return (

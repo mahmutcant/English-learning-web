@@ -1,7 +1,7 @@
 "use client"
 import Link from 'next/link'
 import React, { useState } from 'react'
-import { EyeIcon } from '../../../public/logo'
+import { EyeIcon } from '../../../../public/logo'
 import { useForm } from 'react-hook-form'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '@/firebase'
@@ -21,7 +21,8 @@ const Register = () => {
             set(ref(db,"/users/" + res.user.uid + "/info/"), {
                 firstName: data.firstName,
                 lastName: data.lastName,
-                email: data.email
+                email: data.email,
+                language: "en"
             }).then(() => signIn("credentials", {email:data.email,password:data.password, redirect: true, callbackUrl: "/mainpage"}))
         })
     };
