@@ -1,21 +1,22 @@
-import { auth, db } from '@/firebase';
-import { ref } from 'firebase/database';
 import { NextResponse, type NextRequest } from 'next/server';
 
 const locales = ['en', 'tr'];
-function getLocale(request:any) {
-  return "en"
-}
-export function middleware(request: NextRequest) {
-  const currentUser = request.cookies.get('next-auth.session-token')?.value;
-  const { pathname, origin } = request.nextUrl;
 
+function getLocale(request: any) {
+  return "en";
+}
+
+export function middleware(request: NextRequest) {
+  const currentUser = request.cookies.get('next-auth.session-token')?.value 
+                      || request.cookies.get('__Secure-next-auth.session-token')?.value;
+  
+  const { pathname, origin } = request.nextUrl;
+  
   if (currentUser) {
     if (!pathname.startsWith('/mainpage') && !locales.some(locale => pathname.startsWith(`/${locale}/mainpage`))) {
       return NextResponse.redirect(`${origin}/mainpage`);
     }
   } else {
-
     if (
       !pathname.startsWith('/login') &&
       !pathname.startsWith('/register') &&
@@ -26,11 +27,13 @@ export function middleware(request: NextRequest) {
   }
 
   const pathnameHasLocale = locales.some(locale => pathname.startsWith(`/${locale}`));
+  
   if (!pathnameHasLocale) {
     const locale = getLocale(request);
     request.nextUrl.pathname = `/${locale}${pathname}`;
     return NextResponse.redirect(request.nextUrl);
   }
+
   return NextResponse.next();
 }
 
