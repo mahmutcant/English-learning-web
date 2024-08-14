@@ -9,7 +9,7 @@ const Topbar = () => {
     const currentPath = usePathname();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [dict, setDict] = useState<any>();
-    const notProtectedRoutes = ["/login", "/register", "/about", "/resources", "/about"]
+    const notProtectedRoutes = ["login", "register", "about", "resources", "about"]
     useEffect(() => {
         const fetchDict = async() => {
             setDict(await getDictionary(currentPath?.split("/")[1]))
@@ -18,7 +18,7 @@ const Topbar = () => {
     }, [currentPath])
     return (
         <>
-        {notProtectedRoutes.includes(currentPath!) ? (<div className='bg-white flex justify-between p-3'>
+        {notProtectedRoutes.includes(currentPath!.split("/")[2]) ? (<div className='bg-white flex justify-between p-3'>
             <div className='flex items-center m-3'>
                 <Link className='text-black flex' href="/">
                     <Logo />
@@ -66,7 +66,7 @@ const Topbar = () => {
                     <span>Contact</span>
                 </Link>
                 <Link className='mr-3 text-[#5D5A88] border flex items-center p-2 rounded-[10px]' href="/login">
-                    <span className='px-2'>{currentPath === "/login" ? "Login" : "Logout"}</span>
+                    <span className='px-2'>Login</span>
                 </Link>
                 <Link className='group mr-3 text-[#5D5A88] border flex items-center rounded-[10px] bg-indigo-500' href="/get-started">
                     <span className='px-4 font-semibold text-white'>Get Started</span>

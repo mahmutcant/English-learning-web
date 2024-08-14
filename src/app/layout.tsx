@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <SessionProvider>
-        <body>
+        <body className=" bg-white">
           <Topbar />
         {children}
         </body>

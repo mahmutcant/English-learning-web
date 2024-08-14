@@ -9,9 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/lodash": "^4.17.7",
+    "axios": "^1.7.3",
     "firebase": "^10.12.5",
     "flowbite": "^2.5.1",
     "i18next": "^23.12.2",
+    "lodash": "^4.17.21",
     "next": "14.2.5",
     "next-auth": "^4.24.7",
     "next-i18next": "^15.3.1",
