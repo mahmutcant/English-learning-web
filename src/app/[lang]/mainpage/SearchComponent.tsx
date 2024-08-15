@@ -58,11 +58,7 @@ const SearchComponent = () => {
             }));
         }
     }
-    useEffect(() => {
-        console.log(history);
-
-    }, [history])
-
+    
     const removeHistoryItem = (key: string) => {
         setHistory(prevHistory => {
           const newHistory = { ...prevHistory };

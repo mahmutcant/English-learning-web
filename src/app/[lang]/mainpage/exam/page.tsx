@@ -1,8 +1,11 @@
 import React from 'react'
+import QuestionContext from './QuestionContext'
 
 const Page = () => {
   return (
-    <div>Exam</div>
+    <div>
+      <QuestionContext/>
+    </div>
   )
 }
 
