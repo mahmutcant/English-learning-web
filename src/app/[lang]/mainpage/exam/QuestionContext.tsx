@@ -106,14 +106,22 @@ const QuestionContext = () => {
     };
 
     if (currentQuestionIndex >= questions.length) {
-        return (
-            <div className='flex justify-center p-5 bg-white'>
-                <span className='text-[18px] mb-3'>Tebrikler, sınavı tamamladınız!</span>
-                <span className='text-[18px] mb-3'>{correctCount} adet doğru cevap verdiniz</span>
-                <span className='text-[18px] mb-3'>{wrongCount} adet yanlış cevap verdiniz</span>
-                <button onClick={handleRestart}>Baştan Başla</button>
-            </div>
-        );
+        if(currentQuestionIndex !== 0){
+            return (
+                <div className='flex flex-col h-96 items-center justify-center p-4 bg-white'>
+                    <span className='text-[18px] mb-3'>Tebrikler, sınavı tamamladınız!</span>
+                    <span className='text-[18px] mb-3'>{correctCount} adet doğru cevap verdiniz</span>
+                    <span className='text-[18px] mb-3'>{wrongCount} adet yanlış cevap verdiniz</span>
+                    <button className='border m-5 p-4 w-80 font-semibold rounded-full bg-[#4a3aff] text-white' onClick={handleRestart}>Baştan Başla</button>
+                </div>
+            );
+        }else{
+            return(
+                <div className='flex justify-center h-96 items-center'>
+                    <button onClick={handleRestart} className='border rounded-full m-5 py-3 bg-[#4a3aff] text-white font-semibold w-full'>Başla</button>
+                </div>
+            )
+        }
     }
 
     const currentQuestion = questions[currentQuestionIndex];
