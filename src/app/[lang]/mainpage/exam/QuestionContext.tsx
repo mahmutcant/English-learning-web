@@ -60,10 +60,7 @@ const QuestionContext = () => {
         });
         return shuffleArray(questions);
     };
-    useEffect(() => {
-        console.log(educationContext);
-        
-    }, [educationContext])
+    
     const getRandomKeys = (keys: string[], exclude: string, count: number) => {
         const filteredKeys = keys.filter(key => key !== exclude);
         const shuffled = shuffleArray(filteredKeys);
