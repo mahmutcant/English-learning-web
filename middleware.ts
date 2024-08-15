@@ -20,7 +20,8 @@ export function middleware(request: NextRequest) {
     if (
       !pathname.startsWith('/login') &&
       !pathname.startsWith('/register') &&
-      !locales.some(locale => pathname.startsWith(`/${locale}/login`))
+      !locales.some(locale => pathname.startsWith(`/${locale}/login`)) &&
+      !locales.some(locale => pathname.startsWith(`/${locale}/register`))
     ) {
       return NextResponse.redirect(`${origin}/login`);
     }
