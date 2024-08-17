@@ -50,6 +50,11 @@ const ProtectedTopbar = ({ currentPath, isDropdownOpen, setIsDropdownOpen, dict 
                                             <span>{dict.dropdownButtons.settings}</span>
                                         </Link>
                                     </li>
+                                    <li>
+                                        <Link className="block px-4 py-2 text-black" href="/mainpage/important-words">
+                                            <span>{dict.dropdownButtons.importantWords}</span>
+                                        </Link>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

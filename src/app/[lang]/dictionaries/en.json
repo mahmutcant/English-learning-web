@@ -4,6 +4,7 @@
         "logout": "Logout",
         "settings": "Settings",
         "educationContext": "Education Context",
-        "exam":"Exam"
+        "exam":"Exam",
+        "importantWords":"Important Words"
     }
 }
