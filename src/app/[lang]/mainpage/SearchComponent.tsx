@@ -15,6 +15,7 @@ const SearchComponent = () => {
     const [history, setHistory] = useState<HistoryWordDetail>({})
     const [wordDetail, setWordDetail] = useState<WordDetail>();
     const [loading, setLoading] = useState<boolean>(false);
+    const [isFocusOnSearch, setIsFocusOnSearch] = useState<boolean>(false);
     useEffect(() => {
         if (searchInput.length > 2) {
             handleSearch()
@@ -29,10 +30,10 @@ const SearchComponent = () => {
         })
     }, 1000)
     const handleSelectedSearch = (item: SearchResult) => {
-        setSearchResult([])
-        setSelectedSearchResult(item)
-        getInformation(item.word)
-        saveHistory(item.word)
+        setSelectedSearchResult(item);
+        getInformation(item.word);
+        saveHistory(item.word);
+        setSearchInput(item.word)
     }
     const saveToWordList = (wordDetail: WordDetail, word: string) => {
         set(ref(db, 'users/' + auth.currentUser?.uid + "/education_context/" + word), "")
@@ -92,17 +93,35 @@ const SearchComponent = () => {
                 <div className='absolute mt-3 ml-3'>
                     <SearchIcon />
                 </div>
-                <input className={`w-full border ${searchResult.length > 0 ? "rounded-t-2xl" : "rounded-full"} p-3 pl-10 shadow-inner focus:outline-none`} type='text' value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
+                <input
+                    className={`w-full border ${searchResult.length > 0 ? "rounded-t-2xl" : "rounded-full"} p-3 pl-10 shadow-inner focus:outline-none`}
+                    type='text'
+                    onFocus={() => setIsFocusOnSearch(true)}
+                    onBlur={() => setTimeout(() => setIsFocusOnSearch(false), 100)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                />
                 <button onClick={() => setSearchInput("")} className='absolute right-3 top-3'>
                     {searchInput && <ClearIcon />}
                 </button>
-                {searchResult && <div className={`flex flex-col ${searchResult.length > 0 && "border"} rounded-b-2xl`}>
-                    {searchResult.map((item, index) => (
-                        <button key={index} onClick={() => handleSelectedSearch(item)} className={`p-2 w-full flex justify-center ${index + 2 <= searchResult.length && "border-b-2"}`}>
-                            <span>{item.word}</span>
-                        </button>
-                    ))}
-                </div>}
+                {(searchResult.length > 0 && isFocusOnSearch) && (
+                    <div className={`flex flex-col ${searchResult.length > 0 && "border"} rounded-b-2xl`}>
+                        {searchResult.map((item, index) => (
+                            <button
+                                key={index}
+                                onClick={() => {
+                                    handleSelectedSearch(item);
+                                    if (isFocusOnSearch) {
+                                        setIsFocusOnSearch(false);
+                                    }
+                                }}
+                                className={`p-2 w-full flex justify-center ${index + 2 <= searchResult.length && "border-b-2"}`}
+                            >
+                                <span>{item.word}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
                 <div className='mt-3'>
                     {loading && <div className='flex justify-center'><LoadingAnimation /></div>}
                     {(wordDetail && !loading) && <SearchResultContainer saveToWordList={saveToWordList} isHistory={false} wordDetail={wordDetail} result={selectedSearchResult!.word} />}
