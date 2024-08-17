@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { EducationContextModel } from '../context/ContextClientComponent';
-import { onValue, ref } from 'firebase/database';
+import { get, onValue, ref } from 'firebase/database';
 import { auth, db } from '@/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -18,8 +18,22 @@ const QuestionContext = () => {
             if (user) {
                 const educationContextRef = ref(db, 'users/' + user.uid + "/education_context/");
                 onValue(educationContextRef, (snapshot) => {
-                    const data = snapshot.val() as EducationContextModel | null;
-                    setEducationContext(data!);
+                    const data = snapshot.val();
+                    if (data) {
+                        const words = Object.keys(data);
+                        const wordDetailsPromises = words.map((word) => {
+                            const wordRef = ref(db, "Words/" + word);
+                            return get(wordRef).then((wordSnapshot) => {
+                                return { [word]: wordSnapshot.val() };
+                            });
+                        });
+                        Promise.all(wordDetailsPromises).then((wordDetailsArray) => {
+                            const wordDetails = Object.assign({}, ...wordDetailsArray);
+                            setEducationContext(wordDetails);
+                        }).catch((err) => console.log(err));
+                    } else {
+                        setEducationContext(undefined);
+                    }
                 });
             }
         });

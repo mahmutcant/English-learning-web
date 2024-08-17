@@ -6,7 +6,7 @@ import { debounce } from "lodash"
 import { ClearIcon, HistoryIcon, SearchIcon } from '../../../../public/logo';
 import SearchResultContainer from '@/app/components/SearchResultContainer';
 import LoadingAnimation from '@/app/components/LoadingAnimation';
-import { ref, set } from 'firebase/database';
+import { ref, runTransaction, set } from 'firebase/database';
 import { auth, db } from '@/firebase';
 const SearchComponent = () => {
     const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
@@ -34,14 +34,33 @@ const SearchComponent = () => {
         getInformation(item.word)
         saveHistory(item.word)
     }
-    const saveToWordList = (wordDetail:WordDetail,word:string) => {
-        set(ref(db, 'users/' + auth.currentUser?.uid + "/education_context/" + word), {
-            word: wordDetail?.title.split(":")[0],
-            level: wordDetail?.level,
-            means: wordDetail?.turkish_means
-        }).then(() => {
-
-        }).catch((err: any) => console.log(err))
+    const saveToWordList = (wordDetail: WordDetail, word: string) => {
+        set(ref(db, 'users/' + auth.currentUser?.uid + "/education_context/" + word), "")
+            .then(() => {
+                const wordRef = ref(db, 'Words/' + word);
+                runTransaction(wordRef, (currentData) => {
+                    if (currentData) {
+                        if (!currentData.count) {
+                            currentData.count = 1;
+                        } else {
+                            currentData.count += 1;
+                        }
+                    } else {
+                        currentData = {
+                            word: wordDetail?.title.split(":")[0],
+                            level: wordDetail?.level,
+                            means: wordDetail?.turkish_means,
+                            count: 1
+                        };
+                    }
+                    return currentData;
+                }).then(() => {
+                    set(ref(db, 'users/' + auth.currentUser?.uid + "/education_context/" + word), "");
+                }).catch((err) => {
+                    console.log(err);
+                });
+            })
+            .catch((err: any) => console.log(err));
     }
     const getInformation = (word: string) => {
         setLoading(true)
@@ -50,7 +69,7 @@ const SearchComponent = () => {
             setWordDetail(data);
         }).catch(error => { setLoading(false); console.log(error); })
     }
-    const saveHistory = async (word:string) => {
+    const saveHistory = async (word: string) => {
         if (wordDetail) {
             setHistory(prevHistory => ({
                 [word]: wordDetail,
@@ -58,12 +77,12 @@ const SearchComponent = () => {
             }));
         }
     }
-    
+
     const removeHistoryItem = (key: string) => {
         setHistory(prevHistory => {
-          const newHistory = { ...prevHistory };
-          delete newHistory[key];
-          return newHistory;
+            const newHistory = { ...prevHistory };
+            delete newHistory[key];
+            return newHistory;
         });
     };
 
@@ -85,17 +104,17 @@ const SearchComponent = () => {
                     ))}
                 </div>}
                 <div className='mt-3'>
-                    {loading && <div className='flex justify-center'><LoadingAnimation/></div>}
+                    {loading && <div className='flex justify-center'><LoadingAnimation /></div>}
                     {(wordDetail && !loading) && <SearchResultContainer saveToWordList={saveToWordList} isHistory={false} wordDetail={wordDetail} result={selectedSearchResult!.word} />}
                 </div>
                 {Object.keys(history).length > 0 && <div className='flex justify-center items-center my-3'>
-                    <div className='m-2'><HistoryIcon/></div>
+                    <div className='m-2'><HistoryIcon /></div>
                     <span className='font-bold m-2'>Geçmiş Aramalar</span>
                 </div>}
                 <div>
                     {Object.keys(history).filter(key => key && (key !== selectedSearchResult?.word)).map((key: string) =>
                         <div className='my-3'>
-                            <SearchResultContainer saveToWordList={saveToWordList} wordDetail={history[key]} key={key} isHistory={true} result={key} deleteHistory={removeHistoryItem}/>
+                            <SearchResultContainer saveToWordList={saveToWordList} wordDetail={history[key]} key={key} isHistory={true} result={key} deleteHistory={removeHistoryItem} />
                         </div>
                     )}
                 </div>
