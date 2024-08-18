@@ -28,10 +28,7 @@ const WordContainer = () => {
         });
         return () => unsubscribe();
     }, []);
-    useEffect(() => {
-        console.log(wordList);
-        
-    }, [wordList])
+    
     return (
         <>
         {wordList && Object.keys(wordList).map((key,index) => (
