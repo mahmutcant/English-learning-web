@@ -20,7 +20,7 @@ const WordContext: React.FC<WordContextModel> = ({ item, value, index, saveKnown
                     <input
                         id="link-checkbox"
                         type="checkbox"
-                        checked={isChecked}
+                        defaultChecked={isChecked}
                         className="w-4 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600
                 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 mr-3"
                         onClick={(e) => {e.stopPropagation(); saveKnownWord(index,e.currentTarget.checked)}}
