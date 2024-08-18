@@ -4,31 +4,38 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { onValue, ref } from 'firebase/database';
 import React, { useEffect, useState } from 'react'
 import WordContext from './WordContext';
-
+type WordListObjest = {
+    [key: string] : string;
+}
 const WordContainer = () => {
-    const [wordList,setWordList] = useState<string[]>([])
+    const [wordList,setWordList] = useState<WordListObjest>({})
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 const educationContextRef = ref(db, "Exams/YDS/word/");
                 onValue(educationContextRef, (snapshot) => {
+                    
                     const data = snapshot.val();
+                    console.log(data);
                     if (data) {
                         const words = Object.keys(data);
-                        setWordList(words)
+                        setWordList(data)
                     } else {
-                        setWordList([])
+                        setWordList({})
                     }
                 });
             }
         });
         return () => unsubscribe();
     }, []);
-
+    useEffect(() => {
+        console.log(wordList);
+        
+    }, [wordList])
     return (
         <>
-        {wordList && wordList.map((item) => (
-            <WordContext item={item} />
+        {wordList && Object.keys(wordList).map((key,index) => (
+            <WordContext key={wordList[key] + " " + index} item={key} value={wordList[key]} />
         ))}
         </>
     )

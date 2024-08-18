@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 export type WordContextModel = {
-    item: string
+    item: string,
+    value: string
 }
-const WordContext:React.FC<WordContextModel> = ({item}) => {
+const WordContext:React.FC<WordContextModel> = ({item, value}) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <div className="border-b border-gray-200">
@@ -17,7 +18,7 @@ const WordContext:React.FC<WordContextModel> = ({item}) => {
                 className={`transition-max-height duration-700 ease-in-out overflow-hidden ${isOpen ? 'max-h-screen' : 'max-h-0'
                     }`}
             >
-                <div className="p-4 text-gray-600">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam sequi ea minima quibusdam sunt quas quam, soluta placeat ullam eligendi neque, enim aut aliquam deleniti in ipsa aspernatur rerum voluptates?</div>
+                <div className="p-4 text-gray-600">{value}</div>
             </div>
         </div>
   )

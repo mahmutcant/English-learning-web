@@ -20,7 +20,7 @@ export default function RootLayout({
       <SessionProvider>
         <body className=" bg-white">
           <Topbar />
-        {children}
+          {children}
         </body>
       </SessionProvider>
     </html>
