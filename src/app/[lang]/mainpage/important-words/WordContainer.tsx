@@ -103,26 +103,24 @@ const WordContainer = () => {
         } else {
             return (
                 <>
-                    {Object.values(wordList)
-                    .filter((wordObj) => {
-                        const word = Object.keys(wordObj)[0];
-                        const value = wordObj[word];
-                        return matchesSearchTerm(word);
-                    })
-                    .map((wordObj, index) => {
-                        const key = Object.keys(wordObj)[0];
-                        const value = wordObj[key];
-                        return (
-                            <WordContext
-                                key={key + " " + index}
-                                item={key}
-                                value={value}
-                                index={Object.keys(wordList)[index]}
-                                saveKnownWord={saveKnownWord}
-                                isChecked={savedIndexes.includes(Object.keys(wordList)[index])}
-                            />
-                        );
-                    })}
+                    {Object.keys(wordList)
+                        .map(key => parseInt(key))
+                        .filter(key => matchesSearchTerm(Object.keys(wordList[key])[0]))
+                        .map((key, index) => {
+                            const wordObj = wordList[key];
+                            const word = Object.keys(wordObj)[0];
+                            const value = wordObj[word];
+                            return (
+                                <WordContext
+                                    key={word + " " + index}
+                                    item={word}
+                                    value={value}
+                                    index={key.toString()}
+                                    saveKnownWord={saveKnownWord}
+                                    isChecked={savedIndexes.includes(key.toString())}
+                                />
+                            );
+                        })}
                 </>
             );
         }
