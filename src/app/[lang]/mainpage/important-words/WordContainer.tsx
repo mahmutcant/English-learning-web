@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import WordContext from './WordContext';
 import data from "../../../../../wordlist.json";
-type WordListObject = {
-    [key: number]: { [word: string]: string };
+export type WordListObject = {
+    [key: string]: { [word: string]: string };
 };
 
 const WordContainer = () => {

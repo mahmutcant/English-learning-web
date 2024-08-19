@@ -28,7 +28,7 @@ const WordContext: React.FC<WordContextModel> = ({ item, value, index, saveKnown
                 </div>
             </button>
             <div
-                className={`transition-max-height duration-700 ease-in-out overflow-hidden ${isOpen ? 'max-h-screen' : 'max-h-0'}`}
+                className={`transition-max-height duration-150 ease-linear overflow-hidden ${isOpen ? 'max-h-screen' : 'max-h-0'}`}
             >
                 <div className="p-4 text-gray-600 text-center">{value}</div>
             </div>

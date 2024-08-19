@@ -4,7 +4,8 @@ import { EducationContextModel } from '../context/ContextClientComponent';
 import { get, onValue, ref } from 'firebase/database';
 import { auth, db } from '@/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-
+import data from "../../../../../wordlist.json";
+import { WordListObject } from '../important-words/WordContainer';
 const QuestionContext = () => {
     const [educationContext, setEducationContext] = useState<EducationContextModel>();
     const [questions, setQuestions] = useState<{ question: string, options: string[], correctAnswer: string }[]>([]);
@@ -12,6 +13,7 @@ const QuestionContext = () => {
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [correctCount, setCorrectCount] = useState(0);
     const [wrongCount, setWrongCount] = useState(0);
+    const [examType, setExamType] = useState<string>("ec");
     
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -74,7 +76,61 @@ const QuestionContext = () => {
         });
         return shuffleArray(questions);
     };
+
+    const generateQuestionsForNewStructure = (data: WordListObject) => {
+        const keys = Object.keys(data) as string[];
+        const questions = keys.flatMap((key: string) => {
+            const word = Object.keys(data[key])[0];
+            const meaning = data[key][word];
+            const questionType1 = {
+                question: `${word} kelimesinin anlamı nedir?`,
+                options: shuffleArray([meaning, ...getRandomMeansFromNewObject(data, word, 3,meaning)]),
+                correctAnswer: meaning,
+            };
     
+            const questionType2 = {
+                question: `${meaning} anlamına gelen İngilizce kelime nedir?`,
+                options: shuffleArray([word, ...getRandomKeysFromNewObject(data, word, 3)]),
+                correctAnswer: word,
+            };
+    
+            return [questionType1, questionType2];
+        });
+        
+        return shuffleArray(questions);
+    };
+    
+    function getRandomMeansFromNewObject(data: WordListObject, currentWord: string, count: number,meaning:string): string[] {
+        const allKeys = Object.values(data)
+            .map((key) => {
+                return Object.values(key)[0]
+            })
+            .filter(word => word !== currentWord);
+    
+        const selectedKeys: string[] = [];
+    
+        while (selectedKeys.length < count && allKeys.length > 0) {
+            const randomIndex = Math.floor(Math.random() * allKeys.length);
+            selectedKeys.push(allKeys.splice(randomIndex, 1)[0]);
+        }
+        return selectedKeys;
+    }
+
+    function getRandomKeysFromNewObject(data: WordListObject, currentWord: string, count: number): string[] {
+        const allKeys = Object.keys(data)
+            .map(key => Object.keys(data[key])[0])
+            .filter(word => word !== currentWord);
+    
+        const selectedKeys: string[] = [];
+    
+        while (selectedKeys.length < count && allKeys.length > 0) {
+            const randomIndex = Math.floor(Math.random() * allKeys.length);
+            selectedKeys.push(allKeys.splice(randomIndex, 1)[0]);
+        }
+        
+        return selectedKeys;
+    }
+
     const getRandomKeys = (keys: string[], exclude: string, count: number) => {
         const filteredKeys = keys.filter(key => key !== exclude);
         const shuffled = shuffleArray(filteredKeys);
@@ -96,9 +152,9 @@ const QuestionContext = () => {
         return shuffled.slice(0, count);
     };
 
-    const shuffleArray = (array: any[]) => {
+    function shuffleArray<T>(array: T[]): T[] {
         return array.sort(() => Math.random() - 0.5);
-    };
+    }
 
     const handleAnswerPress = (selectedOption: string, correctAnswer: string) => {
         setSelectedOption(selectedOption);
@@ -115,12 +171,17 @@ const QuestionContext = () => {
         setCurrentQuestionIndex(0);
         setCorrectCount(0);
         setWrongCount(0);
+        const generatedQuestionsType2 = generateQuestionsForNewStructure(data)
         const generatedQuestions = generateQuestions(educationContext!);
-        setQuestions(generatedQuestions);
+        if(examType === "ec"){            
+            setQuestions(generatedQuestions.filter(q => q !== null) as { question: string; options: string[]; correctAnswer: string }[]);
+        }else{
+            setQuestions(generatedQuestionsType2.filter(q => q !== null) as { question: string; options: string[]; correctAnswer: string }[]);
+        }
     };
-
+    
     if (currentQuestionIndex >= questions.length) {
-        if(currentQuestionIndex !== 0){
+        if (currentQuestionIndex !== 0) {
             return (
                 <div className='flex flex-col h-96 items-center justify-center p-4 bg-white'>
                     <span className='text-[18px] mb-3'>Tebrikler, sınavı tamamladınız!</span>
@@ -129,10 +190,17 @@ const QuestionContext = () => {
                     <button className='border m-5 p-4 w-80 font-semibold rounded-full bg-[#4a3aff] text-white' onClick={handleRestart}>Baştan Başla</button>
                 </div>
             );
-        }else{
-            return(
-                <div className='flex justify-center h-96 items-center'>
-                    <button onClick={handleRestart} className='border rounded-full m-5 py-3 bg-[#4a3aff] text-white font-semibold w-full'>Başla</button>
+        } else {
+            return (
+                <div className='flex justify-center h-96 items-center flex-col'>
+                    <form className="max-w-lg mx-auto">
+                        <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Choose Exam Type</label>
+                        <select id="countries" onChange={(choice) => setExamType(choice.currentTarget.value)} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="ec">Education Context</option>
+                            <option value="yds">YDS</option>
+                        </select>
+                    </form>
+                    <button onClick={handleRestart} className='border rounded-full m-5 py-3 bg-[#4a3aff] text-white font-semibold w-full'>Start</button>
                 </div>
             )
         }
@@ -140,7 +208,7 @@ const QuestionContext = () => {
 
     const currentQuestion = questions[currentQuestionIndex];
 
-  return (
+    return (
         <>
             {educationContext && Object.keys(educationContext).length > 3 ? (
                 <div className="flex p-2 m-5 justify-center bg-white">
@@ -149,7 +217,7 @@ const QuestionContext = () => {
                         {currentQuestion.options.map((option, i) => (
                             <button
                                 key={i}
-                                className={`bg-[#4a3aff] items-center p-5 mb-6 rounded-full text-white w-full ${selectedOption !== null && 
+                                className={`bg-[#4a3aff] items-center p-5 mb-6 rounded-full text-white w-full ${selectedOption !== null &&
                                     (option === currentQuestion.correctAnswer
                                         ? 'bg-green-700'
                                         : option === selectedOption
